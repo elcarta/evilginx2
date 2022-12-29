@@ -1,4 +1,4 @@
-module github.com/linkshub832226/evilginx2
+module github.com/elcarta/evilginx2
 
 go 1.12
 
