@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/linkshub832226/evilginx2/log"
+	"github.com/elcarta/evilginx2/log"
 )
 
 type HttpServer struct {
